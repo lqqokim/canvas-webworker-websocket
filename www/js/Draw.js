@@ -15,7 +15,7 @@ class Draw {
 
     //packet-stack에서 수행한 postMessage에 대한 수신
     worker.onmessage = (event) => {
-      //
+      //넘겨받은 packet을 생성하여 내보낸다.
       this.packet.generatePacket(event.data);
     };
 

@@ -1,4 +1,3 @@
-const wsServerPort = 1000;
 const webSocketServer = require('websocket').server;
 const http = require('http');
 
@@ -6,8 +5,8 @@ const server = http.createServer((request, response) => {
     // console.log('request', request, 'response', response);
 });
 
-server.listen(wsServerPort, (event) => {
-    // console.log(event);
+server.listen(8080, (event) => {
+    console.log('Express App on port 8080!');
 });
 
 const wsServer = new webSocketServer({
