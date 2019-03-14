@@ -8,16 +8,28 @@ class Packet {
     this.createPacketLoop = this.createPacketLoop;
 
     this.packets = [];
+    this.packets_buff = []; //정렬용
+    // this.MOVE_IMAGES = {
+    //   BLUE: '/images/SpeedSQ_BLUE.png',
+    //   RED: '/images/SpeedSQ_RED.png',
+    //   YELLOW: '/images/SpeedSQ_YELLOW.png'
+    // };
+
+    // this.WAIT_IMAGES = {
+    //   BLUE: '/images/nBLUE.png',
+    //   RED: '/images/nRED.png',
+    //   YELLOW: '/images/nYELLOW.png'
+    // };
     this.MOVE_IMAGES = {
-      BLUE: '/images/SpeedSQ_BLUE.png',
-      RED: '/images/SpeedSQ_RED.png',
-      YELLOW: '/images/SpeedSQ_YELLOW.png'
+      BLUE: 'packet_move_blue',
+      RED: 'packet_move_red',
+      YELLOW: 'packet_move_yellow'
     };
 
     this.WAIT_IMAGES = {
-      BLUE: '/images/nBLUE.png',
-      RED: '/images/nRED.png',
-      YELLOW: '/images/nYELLOW.png'
+      BLUE: 'packet_wait_blue',
+      RED: 'packet_wait_red',
+      YELLOW: 'packet_wait_yellow'
     };
 
     this.PACKET_ARROW = {
@@ -101,7 +113,7 @@ class Packet {
 
     sprite.x = this.spriteInfo.get_input_start_x();
     sprite.y = this.spriteInfo.get_vertical_mid(); // y축 중심 설정
-    sprite.speed = 20; //패킷 속도
+    sprite.speed = 5; //패킷 속도
 
     sprite.get_x_rand = this.spriteInfo.get_x_rand.bind(this.spriteInfo); //연결
 
@@ -173,9 +185,54 @@ class Packet {
 
     // 패킷 이미지 등록
     this.app.add(sprite);
-
-
     this.packets.push(sprite);
+
+    if (sprite.type !== this.PACKET_TYPE.ALARM) {
+      const alarmPacket = this.searchFirstAlarmPacket();
+      alarmPacket && (
+        // this.changePackets(alarmPacket, sprite),
+        this.app.changeIndex(alarmPacket, sprite)
+      );
+    }
+
+    if (sprite.type === this.PACKET_TYPE.NORMAL) {
+      const warningPacket = this.searchFirstWarningPacket();
+      warningPacket && (
+        // this.changePackets(warningPacket, sprite),
+        this.app.changeIndex(warningPacket, sprite)
+      );
+    }
+  }
+
+  searchFirstAlarmPacket() {
+    for (let i = 0; i < this.packets.length; i++) {
+      if (this.packets[i].type === this.PACKET_TYPE.ALARM) {
+        return this.packets[i];
+      }
+    }
+
+    return false;
+  }
+
+  searchFirstWarningPacket() {
+    for (let i = 0; i < this.packets.length; i++) {
+      if (this.packets[i].type === this.PACKET_TYPE.WARNING) {
+        return this.packets[i];
+      }
+    }
+
+    return false;
+  }
+
+  //packets도 변경된 drawObjs 기준으로 맞춰준다.
+  changePackets(obj_a, obj_b) { //obj_a: 빨 obj_b: 파노
+    const obj_a_idx = this.packets.indexOf(obj_a);
+    const obj_b_idx = this.packets.indexOf(obj_b);
+
+    const tmp_b = this.packets.splice(obj_b_idx, 1);//파노 임시로 뺀다
+    const tmp_a = this.packets.splice(obj_a_idx, 1, tmp_b[0]); // 빨 위치에 파노 넣어줌과 동시에 빨 임시로 뺀다.
+    this.packets.splice(obj_b_idx, 0, tmp_a[0]); // 파노 위치에 빨을 넣어준다.
+    // console.log(obj_a_idx, obj_b_idx)
   }
 
   updatePacketState(type, state) {

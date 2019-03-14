@@ -7,14 +7,14 @@ class CanvasRender {
   BG_COLOR = "#393C43";
   drawObjs = [];
 
-  constructor(targetElId) {
+  constructor(targetElId, canvas_load_shape) {
 
     //캔바스 생성
     const canvas = new Canvas(targetElId);
     this.ctx = canvas.getContext();
 
     //캔바스 오브젝트 생성관련
-    this.create = new CanvasCreate(canvas); //이미지, 스프라이트
+    this.create = new CanvasCreate(canvas, canvas_load_shape); //이미지, 스프라이트
     this.add = this.add;
     this.getCanvasHeight = this.getHeight;
     this.getCanvasWidth = this.getWidth;
@@ -80,6 +80,17 @@ class CanvasRender {
   //그려질 오브젝트 검색
   search(obj) {
     return this.drawObjs.indexOf(obj);
+  }
+
+  //순서 교체
+  changeIndex(obj_a, obj_b) { //obj_a: 빨 obj_b: 파노
+    const obj_a_idx = this.search(obj_a);
+    const obj_b_idx = this.search(obj_b);
+
+    this.remove(obj_b); //파노 임시로 뺀다
+
+    this.drawObjs.splice(obj_a_idx, 1, obj_b); // 빨 위치에 파노 넣어줌과 동시에 빨 임시로 뺀다.
+    this.drawObjs.splice(obj_b_idx, 0, obj_a); // 파노 위치에 빨을 넣어준다.
   }
 
   //그려진 오브젝트 삭제

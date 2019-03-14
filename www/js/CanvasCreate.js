@@ -1,7 +1,8 @@
 class CanvasCreate {
-  constructor(canvas) {
+  constructor(canvas, canvas_load_shape) {
     this.canvas = canvas;
-    // this.image = this.createImage;
+    this.canvas_load_shape = canvas_load_shape;
+    this.image = this.createImage;
     this.sprite = this.createSprite;
   }
 
@@ -19,45 +20,41 @@ class CanvasCreate {
     return this.createContainer(this.canvas.createCanvas(w, h));
   }
 
-  // createImage(url) {
-  //   let ctx = this.canvas.createCanvas();
-  //   let img = document.createElement('img');
-  //   img.src = url;
-
-  //   ctx.drawImage(img, 0, 0);// 캔버스에 임시로 그린다
-
-  //   return createContainer(ctx);//이미지를 넘기는게 아니라 이미지를 그린 캔버스 컨텍스트를 넘긴다
-  // }
-
-  createSprite(urls) {
+  createImage(url) {
     let ctx = this.canvas.createCanvas();
-    let imgs = [];
+    let img = document.createElement('img');
+    img.src = url;
+
+    ctx.drawImage(img, 0, 0);// 캔버스에 임시로 그린다
+
+    return createContainer(ctx);//이미지를 넘기는게 아니라 이미지를 그린 캔버스 컨텍스트를 넘긴다
+  }
+
+  createSprite( ctx_ids ) {
+    let ctx = this.canvas.createCanvas();
+    let ctxs = [];
     let i = 0,
-      len = urls.length;
+      len = ctx_ids.length;
 
     // 이미지 경로 갯수만큼 만들기
     while (i < len) {
-      imgs[i] = document.createElement('img');
-      imgs[i].src = urls[i];
+      ctxs[i] = this.canvas_load_shape.get_ctx_id( ctx_ids[i] );
       i++;
     }
 
     // 첫번째 이미지 그리기
-    // ctx.drawImage(imgs[0], 0, 0); // 캔버스에 임시로 그린다
+    ctx.drawImage(ctxs[0].canvas, 0, 0); // 캔버스에 임시로 그린다
 
     // 커스텀 컨테이너 세팅
     let container = this.createContainer(ctx);
 
     // 이미지 등록
-    container.imgs = imgs;
-
+    container.ctxs = ctxs;
+    
     // 이미지 교체
     container.changeSprite = function (idx) {
-      ctx.fillStyle = "#c82124"; //red
-      ctx.beginPath();
-      ctx.arc(15, 15, 15, 0, Math.PI * 2, true);
-      ctx.closePath();
-      ctx.fill();
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.drawImage(this.ctxs[idx].canvas, 0, 0);
     }
 
     return container;

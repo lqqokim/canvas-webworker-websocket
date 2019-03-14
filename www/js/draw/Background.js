@@ -1,8 +1,8 @@
 class Background {
   constructor(app) {
     this.app = app;
-    this.init = this.init;
-    this.update = this.update;
+    // this.init = this.init;
+    // this.update = this.update;
   }
 
   init() {
