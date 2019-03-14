@@ -1,7 +1,7 @@
 class CanvasCreate {
   constructor(canvas) {
     this.canvas = canvas;
-    this.image = this.createImage;
+    // this.image = this.createImage;
     this.sprite = this.createSprite;
   }
 
@@ -19,20 +19,21 @@ class CanvasCreate {
     return this.createContainer(this.canvas.createCanvas(w, h));
   }
 
-  createImage(url) {
-    let ctx = this.canvas.createCanvas();
-    let img = document.createElement('img');
-    img.src = url;
+  // createImage(url) {
+  //   let ctx = this.canvas.createCanvas();
+  //   let img = document.createElement('img');
+  //   img.src = url;
 
-    ctx.drawImage(img, 0, 0);// 캔버스에 임시로 그린다
+  //   ctx.drawImage(img, 0, 0);// 캔버스에 임시로 그린다
 
-    return createContainer(ctx);//이미지를 넘기는게 아니라 이미지를 그린 캔버스 컨텍스트를 넘긴다
-  }
+  //   return createContainer(ctx);//이미지를 넘기는게 아니라 이미지를 그린 캔버스 컨텍스트를 넘긴다
+  // }
 
   createSprite(urls) {
     let ctx = this.canvas.createCanvas();
     let imgs = [];
-    let i = 0, len = urls.length;
+    let i = 0,
+      len = urls.length;
 
     // 이미지 경로 갯수만큼 만들기
     while (i < len) {
@@ -42,7 +43,7 @@ class CanvasCreate {
     }
 
     // 첫번째 이미지 그리기
-    ctx.drawImage(imgs[0], 0, 0);// 캔버스에 임시로 그린다
+    // ctx.drawImage(imgs[0], 0, 0); // 캔버스에 임시로 그린다
 
     // 커스텀 컨테이너 세팅
     let container = this.createContainer(ctx);
@@ -52,8 +53,11 @@ class CanvasCreate {
 
     // 이미지 교체
     container.changeSprite = function (idx) {
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.drawImage(this.imgs[idx], 0, 0);
+      ctx.fillStyle = "#c82124"; //red
+      ctx.beginPath();
+      ctx.arc(15, 15, 15, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.fill();
     }
 
     return container;

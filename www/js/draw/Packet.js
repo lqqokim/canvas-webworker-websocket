@@ -67,7 +67,7 @@ class Packet {
     }
   }
 
-  create_packet(delay, isHidden) {
+  createPacket(delay, isHidden) {
     // 1 ~ 20초 랜덤 시간 설정
     // const waitTime = Math.floor(Math.random() * 20) + 1;
     const waitTime = delay;
@@ -218,7 +218,7 @@ class Packet {
   generatePacket(data) {
     for (let i = 0; i < data.length; i++) {
       const isHidden = i === 0 ? false : true; //0일때만 그려준다, 묶여서 들어왔을때 첫번째만 그려주고 아니면 안그린다.
-      this.create_packet(data[i].delay, isHidden);
+      this.createPacket(data[i].delay, isHidden);
     }
 
     this.inputCount += data.length;
