@@ -3,13 +3,15 @@ const webSocket = new WebSocket('ws://127.0.0.1:8080');
 
 //packet을 쌓는 공간
 const packetStack = [];
+
+//pakcet 생성 여부를 결정하는 flag
 let isLoop = false;
 
 if (webSocket) {
-    webSocket.onopen = onOpen;        //소켓연결 되었을때 
-    webSocket.onclose = onClose;      //연결이 닫혔을때
-    webSocket.onmessage = onMessage;  //server로부터 데이터 수신할때
-    webSocket.onerror = onError;      //통신에 오류가 있을때
+    webSocket.onopen = onOpen; //소켓연결 되었을때 
+    webSocket.onclose = onClose; //연결이 닫혔을때
+    webSocket.onmessage = onMessage; //server로부터 데이터 수신할때
+    webSocket.onerror = onError; //통신에 오류가 있을때
 }
 
 function onOpen(event) {
@@ -38,17 +40,12 @@ function onError(event) {
 
 function closeSocket() {
     webSocket.close();
-    console.log(webSocket)
-    // if (mySocket.readyState !== mySocket.CLOSED) {
-    //     console.log("Closing socket from our end (timer).");
-    //     mySocket.close();
-    // } else
-    //     console.log("Socket was already closed (timer).");
 }
 
 //일정 시간 간격으로 stack에 쌓아둔 packet 묶음을 내보낸다.
 function timeCheckLoop() {
-    if(!isLoop) return;
+    if (!isLoop) return;
+
     sendPacketStack(packetStack);
     packetStack.splice(0);
     setTimeout(timeCheckLoop, 200);
@@ -58,3 +55,5 @@ function sendPacketStack(data) {
     //worker객체로 보낸다.
     this.postMessage(data);
 }
+
+

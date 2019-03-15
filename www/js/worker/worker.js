@@ -1,4 +1,4 @@
 //worker 생성
-const PacketStackWorker = new Worker('./js/worker/packet-stack.js');
+const packetStackWorker = new Worker('./js/worker/packet-collector.js');
 
-export default PacketStackWorker;
+export default packetStackWorker;

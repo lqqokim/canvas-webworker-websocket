@@ -1,14 +1,14 @@
-const webSocketServer = require('websocket').server;
-const http = require('http');
+const webSocketServer = require("websocket").server;
+const http = require("http");
 let isLoop = false;
 
 //Websocket 연결을 위해 HTTP 프로토콜 기반으로 서버생성
-const server = http.createServer((request, response) => { });
+const server = http.createServer((request, response) => {});
 let connection;
 
 //server가 대기하는 포트 설정
-server.listen(8080, (event) => {
-    console.log('Websocket based app on port 8080!');
+server.listen(8080, () => {
+    console.log("Websocket based app on port 8080!");
 });
 
 //웹소켓 생성
@@ -17,22 +17,22 @@ const wsServer = new webSocketServer({
     autoAcceptConnections: true
 });
 
-wsServer.on('connect', function (webSocketConnection) {
-    console.log('Server connect!');
+wsServer.on("connect", webSocketConnection => {
+    console.log("Server connect!");
     isLoop = true;
     connection = webSocketConnection;
 
     packet_loop();
 });
 
-wsServer.on('close', function (webSocketConnection, closeReason, description) {
+wsServer.on("close", (webSocketConnection, closeReason, description) => {
     isLoop = false;
-    console.log('Server close!', description)
+    console.log("Server close!", description);
 });
 
-wsServer.on('request', function (request) {
+wsServer.on("request", function (request) {
     //연결 허용, 보안에대한 처리를 위해서는 accept, reject처리 해야한다.
-    connection = request.accept(null, request.origin); 
+    connection = request.accept(null, request.origin);
 
     //client에서 send 했을때 들어온다.
     // connection.on('message', function (message) {
@@ -52,11 +52,12 @@ const PACKET_DELAY_RAND_TIME = {
     end: 20
 };
 
-//랜덤시간 간격으로 packet을 생성하여 client(packet-stack)으로 전달
+//랜덤시간 간격으로 packet을 생성하여 client(packet collector)으로 전달
 function packet_loop() {
     if (!isLoop) return;
     connection.send(JSON.stringify(createPacket()));
-    console.log('Send to client: ', JSON.stringify(createPacket()))
+    console.log("Send to client: ", JSON.stringify(createPacket()));
+   
     setTimeout(() => {
         packet_loop();
     }, random(PACKET_LOOP_TIME_RANGE.start, PACKET_LOOP_TIME_RANGE.end));
@@ -66,7 +67,7 @@ function packet_loop() {
 function createPacket() {
     return {
         delay: random(PACKET_DELAY_RAND_TIME.start, PACKET_DELAY_RAND_TIME.end)
-    }
+    };
 }
 
 function random(start, end) {
@@ -80,6 +81,7 @@ Websocket 정리
 [개념]
     - 서버와 클라이언트 간에 Socket Connection을 유지해서 언제든 양방향 통신
       또는 데이터 전송이 가능하도록 하는 기술이다.
+    - Socket.io는 표준 기술이 아니고 Node.js 모듈
 
 [작동원리]
     - 서버와 클라이언트 간의 WebSocket연결은 HTTP프로토콜을 통해 이루어지고

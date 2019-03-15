@@ -1,64 +1,57 @@
-class CanvasCreate {
-  constructor(canvas, canvas_load_shape) {
-    this.canvas = canvas;
-    this.canvas_load_shape = canvas_load_shape;
-    this.image = this.createImage;
-    this.sprite = this.createSprite;
-  }
+export default class CanvasCreate {
+	constructor(canvas, LoadPacketShape) {
+		this.canvas = canvas;
+		this.LoadPacketShape = LoadPacketShape;
+	}
 
-  //캔버스에 그릴 기본적인 오브젝트
-  createContainer(buffCtx) {
-    return {
-      ctx: buffCtx,
-      x: 0,
-      y: 0,
-      isHidden: false //isHidden이 true이면 감추고 false면 보여준다.
-    };
-  }
+	//캔버스에 그릴 기본적인 오브젝트
+	createContainer(buffCtx) {
+		return {
+			ctx: buffCtx,
+			x: 0,
+			y: 0,
+			isHidden: false //isHidden이 true이면 감추고 false면 보여준다.
+		};
+	}
 
-  container(w, h) {
-    return this.createContainer(this.canvas.createCanvas(w, h));
-  }
+	container(w, h) {
+		return this.createContainer(this.canvas.createCanvas(w, h));
+	}
 
-  createImage(url) {
-    let ctx = this.canvas.createCanvas();
-    let img = document.createElement('img');
-    img.src = url;
+	createImage(url) {
+		let ctx = this.canvas.createCanvas();
+		let img = document.createElement('img');
+		img.src = url;
+	
+		ctx.drawImage(img, 0, 0);// 캔버스에 임시로 그린다
+	
+		return createContainer(ctx);//이미지를 넘기는게 아니라 이미지를 그린 캔버스 컨텍스트를 넘긴다
+	  }
 
-    ctx.drawImage(img, 0, 0);// 캔버스에 임시로 그린다
+	createSprite(ctxIds) {
+		let ctx = this.canvas.createCanvas();
+		let ctxs = [];
 
-    return createContainer(ctx);//이미지를 넘기는게 아니라 이미지를 그린 캔버스 컨텍스트를 넘긴다
-  }
+		// packet shape종류 만큼 ctx 생성
+		for(let i = 0; i < ctxIds.length; i++) {
+			ctxs[i] = this.LoadPacketShape.getCtxId(ctxIds[i]);
+		}
 
-  createSprite( ctx_ids ) {
-    let ctx = this.canvas.createCanvas();
-    let ctxs = [];
-    let i = 0,
-      len = ctx_ids.length;
+		// 첫번째 이미지 그리기
+		ctx.drawImage(ctxs[0].canvas, 0, 0);
 
-    // 이미지 경로 갯수만큼 만들기
-    while (i < len) {
-      ctxs[i] = this.canvas_load_shape.get_ctx_id( ctx_ids[i] );
-      i++;
-    }
+		// 커스텀 컨테이너 세팅
+		let container = this.createContainer(ctx);
 
-    // 첫번째 이미지 그리기
-    ctx.drawImage(ctxs[0].canvas, 0, 0); // 캔버스에 임시로 그린다
+		// packet shape 등록
+		container.ctxs = ctxs;
 
-    // 커스텀 컨테이너 세팅
-    let container = this.createContainer(ctx);
+		// packet shape 교체
+		container.changeSprite = function (idx) {
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			ctx.drawImage(this.ctxs[idx].canvas, 0, 0);
+		}
 
-    // 이미지 등록
-    container.ctxs = ctxs;
-    
-    // 이미지 교체
-    container.changeSprite = function (idx) {
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.drawImage(this.ctxs[idx].canvas, 0, 0);
-    }
-
-    return container;
-  }
+		return container;
+	}
 }
-
-export default CanvasCreate;
